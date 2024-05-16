@@ -51,7 +51,7 @@ def connect_to_vpn(vpn_name):
     execute_command(f"(echo conf_name={vpn_name} && echo proto=openvpn) > /usr/syno/etc/synovpnclient/vpnc_connecting")
 
     # Give root file permissions
-    execute_command("chown devonuto:root /usr/syno/etc/synovpnclient/vpnc_connecting")
+    execute_command("chown <USERNAME>:root /usr/syno/etc/synovpnclient/vpnc_connecting")
 
     # Call reconnection
     execute_command(f"/usr/syno/bin/synovpnc reconnect --protocol=openvpn --name={vpn_name} --keepfile")
