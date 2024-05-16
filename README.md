@@ -100,7 +100,7 @@ To make the script run every 3 hours on a Synology NAS running DSM 7.2, you can 
 #### Task Settings
 - **Run command**: Input the command to run your script, e.g.,
   ```bash
-  /usr/bin/python3 /path/to/your/script/set_recommended_vpn_server.py
+  /usr/bin/python3 /path/to/your/script/autoswitch-vpn.py
   ```
 
 ## Troubleshooting
