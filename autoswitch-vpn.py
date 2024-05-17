@@ -3,6 +3,9 @@ import subprocess
 import re
 import time
 import sys
+import json
+import os
+from datetime import datetime
 
 # Function to fetch the recommended servers
 def get_recommended_servers():
@@ -79,6 +82,9 @@ def main():
         # Normalize server names to match the format of configured VPNs
         normalized_recommended_servers = [server.replace('.', '_') for server in recommended_servers]
 
+        # Track recommendations
+        track_server_usage(normalized_recommended_servers)
+        
         # Find the highest recommended server that is configured
         for server in normalized_recommended_servers:
             print(f"Checking if {server} is configured on the NAS")
@@ -94,6 +100,39 @@ def main():
     except Exception as e:
         print(f"An uncaught error occurred: {e}")
         sys.exit(1)
+
+def track_server_usage(recommended_servers):
+    # Return if no recommended servers are provided
+    if not recommended_servers:
+        return
+    
+    # Define the path for the JSON file where server counts are stored
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vpn-recommended-servers.json')
+    
+    # Load existing server usage data from the file if it exists
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            server_usage = json.load(file)
+    else:
+        server_usage = {}
+    
+    # Get the current date in ISO format
+    current_date = datetime.now().isoformat()
+    
+    # Update the count and last recommended date for each recommended server
+    for server in recommended_servers:
+        if server in server_usage:
+            server_usage[server]['count'] += 1
+        else:
+            server_usage[server] = {'count': 1}
+        server_usage[server]['last recommended'] = current_date
+
+    # Sort the server_usage dictionary by count in descending order
+    sorted_server_usage = {k: v for k, v in sorted(server_usage.items(), key=lambda item: item[1]['count'], reverse=True)}
+
+    # Save the updated and sorted server usage data back to the file
+    with open(file_path, 'w') as file:
+        json.dump(sorted_server_usage, file, indent=4)
 
 if __name__ == "__main__":
     main()
